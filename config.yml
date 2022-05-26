@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: pod
+metadata:
+  name: SampleExpressApp-pod
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: SampleExpressApp
+  template:
+    metadata:
+      labels:
+        app: SampleExpressApp
+    spec:
+      containers:
+      - name: SampleExpressApp
+        image: SampleExpressApp:latest
+        ports:
+        - containerPort: 3000
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: SampleExpressApp
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: pod
+    name: SampleExpressApp-pod
+  minReplicas: 1
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      targetAverageUtilization: 50
